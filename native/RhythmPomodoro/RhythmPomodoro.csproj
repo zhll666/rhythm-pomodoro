@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>RhythmPomodoro</AssemblyName>
+    <RootNamespace>RhythmPomodoro</RootNamespace>
+    <AssemblyTitle>节律 · 环形番茄钟</AssemblyTitle>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Version>1.0.0</Version>
+    <Authors>Rhythm</Authors>
+    <Product>节律 · 环形番茄钟</Product>
+    <Description>原生 Windows 环形工作休息计时器</Description>
+    <Company>Rhythm</Company>
+    <Copyright>Copyright © 2026</Copyright>
+  </PropertyGroup>
+</Project>

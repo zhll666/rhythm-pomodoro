@@ -1,0 +1,713 @@
+<Window x:Class="RhythmPomodoro.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:RhythmPomodoro.Controls"
+        Title="节律"
+        Width="1120"
+        Height="790"
+        MinWidth="720"
+        MinHeight="560"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+        Background="#F2EEE5"
+        FontFamily="Microsoft YaHei UI"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display"
+        PreviewKeyDown="Window_PreviewKeyDown"
+        StateChanged="Window_StateChanged"
+        SizeChanged="Window_SizeChanged">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="52"
+                      ResizeBorderThickness="6"
+                      CornerRadius="0"
+                      GlassFrameThickness="0"
+                      UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+
+    <Border x:Name="WindowFrame"
+            Background="{StaticResource WindowBackdropBrush}"
+            BorderBrush="#D4CCBE"
+            BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="52" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- =====================================================
+                 Top bar
+                 ===================================================== -->
+            <Border Grid.Row="0"
+                    Background="#D8F4F0E7"
+                    BorderBrush="{StaticResource TopBarDividerBrush}"
+                    BorderThickness="0,0,0,1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="17,0,0,0"
+                                IsHitTestVisible="False">
+                        <Grid Width="27" Height="27">
+                            <Ellipse Stroke="{StaticResource RingLogoBrush}" StrokeThickness="5" />
+                            <Ellipse Width="9" Height="9" Fill="{StaticResource PaperLightBrush}" />
+                            <Path Data="M 13.5,1 L 13.5,7"
+                                  Stroke="{StaticResource InkBrush}"
+                                  StrokeThickness="1.4"
+                                  StrokeStartLineCap="Round" />
+                        </Grid>
+                        <TextBlock Text="节律"
+                                   Margin="10,0,0,0"
+                                   VerticalAlignment="Center"
+                                   FontFamily="Microsoft YaHei UI"
+                                   FontSize="14.5"
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource InkBrush}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Margin="0,0,10,0">
+                        <Button x:Name="SettingsButton"
+                                Style="{StaticResource TopBarPillButtonStyle}"
+                                Margin="0,0,8,0"
+                                ToolTip="循环设置"
+                                AutomationProperties.Name="循环设置"
+                                WindowChrome.IsHitTestVisibleInChrome="True"
+                                Click="SettingsButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <Grid Width="16" Height="16" Margin="0,0,7,0">
+                                    <Grid x:Name="SettingsSlidersGlyph">
+                                        <Path Data="M 1.5,4.5 H 14.5 M 1.5,8 H 14.5 M 1.5,11.5 H 14.5"
+                                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                              StrokeThickness="1.15"
+                                              StrokeStartLineCap="Round" />
+                                        <Ellipse Width="3.4" Height="3.4" Fill="{StaticResource PaperLightBrush}"
+                                                 Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                 StrokeThickness="1.1"
+                                                 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="3,2.8,0,0" />
+                                        <Ellipse Width="3.4" Height="3.4" Fill="{StaticResource PaperLightBrush}"
+                                                 Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                 StrokeThickness="1.1"
+                                                 HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,6.3,2.7,0" />
+                                        <Ellipse Width="3.4" Height="3.4" Fill="{StaticResource PaperLightBrush}"
+                                                 Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                                 StrokeThickness="1.1"
+                                                 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,9.8,0,0" />
+                                    </Grid>
+                                    <Path x:Name="BackGlyph"
+                                          Data="M 14,2.5 L 6,8 L 14,13.5 M 6,8 H 15"
+                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                          StrokeThickness="1.5"
+                                          StrokeStartLineCap="Round"
+                                          StrokeEndLineCap="Round"
+                                          StrokeLineJoin="Round"
+                                          Visibility="Collapsed" />
+                                </Grid>
+                                <TextBlock x:Name="SettingsButtonText"
+                                           Text="设置"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+
+                        <Border Width="1" Height="20" Background="{StaticResource LineBrush}" Margin="2,0,7,0" />
+
+                        <Button x:Name="MinimizeButton"
+                                Style="{StaticResource WindowControlButtonStyle}"
+                                ToolTip="最小化"
+                                AutomationProperties.Name="最小化"
+                                WindowChrome.IsHitTestVisibleInChrome="True"
+                                Click="MinimizeButton_Click">
+                            <Path Data="M 2,8 H 14"
+                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                  StrokeThickness="1.25"
+                                  StrokeStartLineCap="Round" />
+                        </Button>
+
+                        <Button x:Name="MaximizeButton"
+                                Style="{StaticResource WindowControlButtonStyle}"
+                                ToolTip="最大化"
+                                AutomationProperties.Name="最大化"
+                                WindowChrome.IsHitTestVisibleInChrome="True"
+                                Click="MaximizeButton_Click">
+                            <Grid Width="14" Height="14">
+                                <Path x:Name="MaximizeGlyph"
+                                      Data="M 1.5,1.5 H 12.5 V 12.5 H 1.5 Z"
+                                      Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      StrokeThickness="1.15"
+                                      Fill="Transparent" />
+                                <Grid x:Name="RestoreGlyph" Visibility="Collapsed">
+                                    <Path Data="M 4,1.5 H 12.5 V 10"
+                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                          StrokeThickness="1.1"
+                                          Fill="Transparent" />
+                                    <Path Data="M 1.5,4 H 10 V 12.5 H 1.5 Z"
+                                          Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                          StrokeThickness="1.1"
+                                          Fill="{StaticResource WindowBackdropBrush}" />
+                                </Grid>
+                            </Grid>
+                        </Button>
+
+                        <Button x:Name="CloseButton"
+                                Style="{StaticResource CloseWindowButtonStyle}"
+                                ToolTip="关闭"
+                                AutomationProperties.Name="关闭"
+                                WindowChrome.IsHitTestVisibleInChrome="True"
+                                Click="CloseButton_Click">
+                            <Path Data="M 3,3 L 13,13 M 13,3 L 3,13"
+                                  Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                  StrokeThickness="1.3"
+                                  StrokeStartLineCap="Round"
+                                  StrokeEndLineCap="Round" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- =====================================================
+                 Main content
+                 ===================================================== -->
+            <Grid Grid.Row="1">
+                <!-- Timer view -->
+                <Grid x:Name="TimerView">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0"
+                          MaxWidth="1420"
+                          HorizontalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="236" />
+                        </Grid.ColumnDefinitions>
+
+                        <Viewbox Grid.Column="0"
+                                 Margin="24,8,24,10"
+                                 MaxWidth="980"
+                                 MaxHeight="980"
+                                 HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"
+                                 Stretch="Uniform">
+                            <controls:PomodoroRing x:Name="Ring"
+                                                   Width="620"
+                                                   Height="620" />
+                        </Viewbox>
+
+                        <StackPanel Grid.Column="1"
+                                    Width="198"
+                                    Margin="0,0,34,0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="CYCLE"
+                                       FontFamily="Segoe UI"
+                                       FontSize="9"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource MutedBrush}"
+                                       TextOptions.TextFormattingMode="Display" />
+                            <StackPanel Orientation="Horizontal" Margin="0,1,0,0">
+                                <TextBlock x:Name="CycleNumberText"
+                                           Text="01"
+                                           FontFamily="Bahnschrift"
+                                           FontSize="46"
+                                           FontWeight="SemiBold"
+                                           Foreground="{StaticResource InkBrush}"
+                                           TextOptions.TextFormattingMode="Display" />
+                                <TextBlock x:Name="CycleTotalText"
+                                           Text="/ 04"
+                                           FontFamily="Bahnschrift"
+                                           FontSize="16"
+                                           Foreground="{StaticResource MutedBrush}"
+                                           Margin="8,0,0,8"
+                                           VerticalAlignment="Bottom"
+                                           TextOptions.TextFormattingMode="Display" />
+                            </StackPanel>
+
+                            <Border Width="28"
+                                    Height="1"
+                                    Background="{StaticResource LineStrongBrush}"
+                                    HorizontalAlignment="Left"
+                                    Margin="1,12,0,16" />
+
+                            <Border x:Name="PhaseBadge"
+                                    HorizontalAlignment="Left"
+                                    Padding="9,5,9,5"
+                                    CornerRadius="99"
+                                    BorderThickness="1"
+                                    Background="{StaticResource RedFaintBrush}"
+                                    BorderBrush="{StaticResource RedSoftBrush}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse x:Name="PhaseDot"
+                                             Width="5"
+                                             Height="5"
+                                             Fill="{StaticResource RedBrush}"
+                                             VerticalAlignment="Center"
+                                             Margin="0,1,6,0" />
+                                    <TextBlock x:Name="PhaseText"
+                                               Text="专注"
+                                               FontFamily="Microsoft YaHei UI"
+                                               FontSize="11"
+                                               FontWeight="SemiBold"
+                                               Foreground="{StaticResource RedDeepBrush}"
+                                               VerticalAlignment="Center"
+                                               TextOptions.TextFormattingMode="Display" />
+                                    <TextBlock x:Name="PhaseEnText"
+                                               Text="FOCUS"
+                                               FontFamily="Segoe UI"
+                                               FontSize="7"
+                                               FontWeight="SemiBold"
+                                               Foreground="{StaticResource RedDeepBrush}"
+                                               Opacity="0.62"
+                                               VerticalAlignment="Center"
+                                               Margin="6,1,0,0"
+                                               TextOptions.TextFormattingMode="Display" />
+                                </StackPanel>
+                            </Border>
+
+                            <Button x:Name="StartPauseButton"
+                                    Style="{StaticResource RoundActionButtonStyle}"
+                                    Width="86"
+                                    Height="86"
+                                    Margin="0,24,0,0"
+                                    HorizontalAlignment="Left"
+                                    BorderBrush="{StaticResource RedBrush}"
+                                    ToolTip="开始专注 (Space)"
+                                    AutomationProperties.Name="开始或暂停计时"
+                                    Click="StartPauseButton_Click">
+                                <Grid Width="28" Height="28">
+                                    <Path x:Name="PlayGlyph"
+                                          Data="M 8,3 L 24,14 L 8,25 Z"
+                                          Fill="#FBF6EB"
+                                          Stroke="#FBF6EB"
+                                          StrokeThickness="1.2"
+                                          StrokeLineJoin="Round" />
+                                    <Grid x:Name="PauseGlyph" Visibility="Collapsed">
+                                        <Rectangle Width="6.5" Height="20" RadiusX="2.5" RadiusY="2.5"
+                                                   Fill="#FBF6EB" HorizontalAlignment="Left" Margin="5,0,0,0" />
+                                        <Rectangle Width="6.5" Height="20" RadiusX="2.5" RadiusY="2.5"
+                                                   Fill="#FBF6EB" HorizontalAlignment="Right" Margin="0,0,5,0" />
+                                    </Grid>
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Total remaining rectangle -->
+                    <Border x:Name="ReserveCard"
+                            Grid.Row="1"
+                            Height="96"
+                            Margin="26,0,26,20"
+                            Background="{StaticResource DarkPanelBrush}"
+                            CornerRadius="16"
+                            Padding="18,13,18,12"
+                            SnapsToDevicePixels="True">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="250" />
+                                <ColumnDefinition Width="1" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="2,0,18,0">
+                                <TextBlock Text="总剩余"
+                                           FontFamily="Microsoft YaHei UI"
+                                           FontSize="8.5"
+                                           FontWeight="SemiBold"
+                                           Foreground="#9A9284"
+                                           TextOptions.TextFormattingMode="Display" />
+                                <TextBlock x:Name="RemainText"
+                                           Text="03:20:00"
+                                           FontFamily="Bahnschrift"
+                                           FontSize="34"
+                                           FontWeight="SemiBold"
+                                           Foreground="#FAF5E9"
+                                           Margin="0,1,0,0"
+                                           TextOptions.TextFormattingMode="Display" />
+                                <TextBlock x:Name="CycleStatusText"
+                                           Text="等待开始"
+                                           FontFamily="Microsoft YaHei UI"
+                                           FontSize="8.5"
+                                           Foreground="#91897A"
+                                           Margin="0,3,0,0"
+                                           TextOptions.TextFormattingMode="Display" />
+                            </StackPanel>
+
+                            <Border Grid.Column="1" Background="#3B3730" Margin="0,2,0,2" />
+
+                            <Grid Grid.Column="2" Margin="18,0,2,0" VerticalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="剩余占空比"
+                                                   FontFamily="Microsoft YaHei UI"
+                                                   FontSize="8.5"
+                                                   Foreground="#A2988A"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock x:Name="DutyText"
+                                                   Text="100%"
+                                                   FontFamily="Bahnschrift"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#F7F2E7"
+                                                   Margin="7,0,0,0"
+                                                   VerticalAlignment="Center" />
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center">
+                                        <Ellipse Width="5" Height="5" Fill="{StaticResource RedBrush}" Margin="0,0,4,0" />
+                                        <TextBlock Text="R" Foreground="#9F9789" FontFamily="Bahnschrift" FontSize="8" />
+                                        <TextBlock x:Name="RedValueText" Text="100" Foreground="#D8D0C1" FontFamily="Bahnschrift" FontSize="8" Margin="2,0,0,0" />
+                                        <TextBlock Text=" + " Foreground="#665F54" FontFamily="Bahnschrift" FontSize="8" />
+                                        <Ellipse Width="5" Height="5" Fill="{StaticResource GreenBrush}" Margin="0,0,4,0" />
+                                        <TextBlock Text="G" Foreground="#9F9789" FontFamily="Bahnschrift" FontSize="8" />
+                                        <TextBlock x:Name="GreenValueText" Text="0" Foreground="#D8D0C1" FontFamily="Bahnschrift" FontSize="8" Margin="2,0,0,0" />
+                                        <TextBlock Text=" = 100" Foreground="#777065" FontFamily="Bahnschrift" FontSize="8" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <Border x:Name="BarTrack"
+                                        Grid.Row="1"
+                                        Height="16"
+                                        Margin="0,6,0,0"
+                                        Background="{StaticResource DarkTrackBrush}"
+                                        BorderBrush="#4A453C"
+                                        BorderThickness="1"
+                                        CornerRadius="5"
+                                        ClipToBounds="True"
+                                        SizeChanged="BarTrack_SizeChanged">
+                                    <Grid x:Name="BarTrackInner">
+                                        <Border x:Name="BarFill"
+                                                HorizontalAlignment="Left"
+                                                Width="0"
+                                                Background="{StaticResource RedBrush}"
+                                                CornerRadius="4" />
+                                        <Grid IsHitTestVisible="False">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition />
+                                                <ColumnDefinition />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" BorderBrush="#263A3630" BorderThickness="0,0,1,0" />
+                                            <Border Grid.Column="1" BorderBrush="#263A3630" BorderThickness="0,0,1,0" />
+                                            <Border Grid.Column="2" BorderBrush="#263A3630" BorderThickness="0,0,1,0" />
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+
+                                <Grid Grid.Row="2" Margin="0,4,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="已用 " FontFamily="Microsoft YaHei UI" FontSize="8" Foreground="#887F71" />
+                                        <TextBlock x:Name="ElapsedText" Text="00:00:00" FontFamily="Bahnschrift" FontSize="8" Foreground="#B3AA9B" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <TextBlock Text="总时长" FontFamily="Microsoft YaHei UI" FontSize="8" Foreground="#887F71" />
+                                        <TextBlock x:Name="TotalTimeText" Text="03:20:00" FontFamily="Bahnschrift" FontSize="8" Foreground="#B3AA9B" />
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Settings view -->
+                <Grid x:Name="SettingsView" Visibility="Collapsed">
+                    <ScrollViewer x:Name="SettingsScrollViewer"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  Padding="0,0,0,0">
+                        <Grid x:Name="SettingsContent"
+                              MaxWidth="1040"
+                              Margin="30,18,30,28"
+                              HorizontalAlignment="Center">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" Margin="2,0,2,16">
+                                <StackPanel>
+                                    <TextBlock Text="循环设置" Style="{StaticResource SettingsTitleStyle}" />
+                                    <TextBlock Text="调整工作与休息的编排。修改设置会暂停并重置当前计时。"
+                                               Style="{StaticResource MutedTextStyle}"
+                                               Margin="0,5,0,0" />
+                                </StackPanel>
+                                <Button Content="恢复默认"
+                                        Style="{StaticResource TextButtonStyle}"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Top"
+                                        Margin="0,4,0,0"
+                                        Click="RestoreDefaults_Click" />
+                            </Grid>
+
+                            <Grid x:Name="SettingsColumns" Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1.48*" />
+                                    <ColumnDefinition Width="0.9*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Border x:Name="SettingsLeftCard"
+                                        Grid.Column="0"
+                                        Style="{StaticResource CardStyle}"
+                                        Margin="0,0,10,0"
+                                        VerticalAlignment="Top">
+                                    <StackPanel>
+                                        <Grid>
+                                            <StackPanel>
+                                                <TextBlock Text="单循环编排" Style="{StaticResource SectionTitleStyle}" />
+                                                <TextBlock Text="包含全部工作与休息区间"
+                                                           Style="{StaticResource MutedTextStyle}"
+                                                           Margin="0,3,0,0" />
+                                            </StackPanel>
+
+                                            <StackPanel Orientation="Horizontal"
+                                                        HorizontalAlignment="Right"
+                                                        VerticalAlignment="Center">
+                                                <TextBlock Text="循环总长"
+                                                           Style="{StaticResource FieldLabelStyle}"
+                                                           Foreground="{StaticResource MutedBrush}"
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,0,9,0" />
+                                                <Border Height="32"
+                                                        Background="#FFFDF8"
+                                                        BorderBrush="{StaticResource CardBorderBrush}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="7">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Button Content="−"
+                                                                Style="{StaticResource StepperButtonStyle}"
+                                                                Click="CycleLengthMinus_Click" />
+                                                        <Border Width="1" Background="{StaticResource LineBrush}" />
+                                                        <TextBox x:Name="CycleLengthBox"
+                                                                 Style="{StaticResource StepperInputStyle}"
+                                                                 Width="40"
+                                                                 Text="50"
+                                                                 LostFocus="CycleLengthBox_LostFocus"
+                                                                 PreviewKeyDown="CycleLengthBox_PreviewKeyDown" />
+                                                        <TextBlock Text="分"
+                                                                   VerticalAlignment="Center"
+                                                                   FontSize="9"
+                                                                   Foreground="{StaticResource MutedBrush}"
+                                                                   Margin="0,0,4,0" />
+                                                        <Border Width="1" Background="{StaticResource LineBrush}" />
+                                                        <Button Content="+"
+                                                                Style="{StaticResource StepperButtonStyle}"
+                                                                Click="CycleLengthPlus_Click" />
+                                                    </StackPanel>
+                                                </Border>
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <controls:TimelineEditor x:Name="Timeline"
+                                                                 Height="84"
+                                                                 Margin="0,18,0,0" />
+
+                                        <Grid Margin="0,2,0,12">
+                                            <TextBlock Text="拖动休息区间整体或两端调整，也可直接输入分钟。"
+                                                       Style="{StaticResource TinyTextStyle}"
+                                                       Foreground="{StaticResource MutedLightBrush}"
+                                                       VerticalAlignment="Center" />
+                                            <StackPanel Orientation="Horizontal"
+                                                        HorizontalAlignment="Right"
+                                                        VerticalAlignment="Center">
+                                                <Ellipse Width="9" Height="6" Fill="{StaticResource RedBrush}" Stroke="{StaticResource RedDeepBrush}" StrokeThickness="0.8" Margin="0,0,4,0" />
+                                                <TextBlock Text="工作" Style="{StaticResource TinyTextStyle}" />
+                                                <Ellipse Width="9" Height="6" Fill="{StaticResource GreenBrush}" Stroke="{StaticResource GreenDeepBrush}" StrokeThickness="0.8" Margin="10,0,4,0" />
+                                                <TextBlock Text="休息" Style="{StaticResource TinyTextStyle}" />
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <Grid Margin="0,0,0,4">
+                                            <TextBlock Text="休息区间" Style="{StaticResource FieldLabelStyle}" />
+                                            <Border HorizontalAlignment="Right"
+                                                    Background="{StaticResource GreenFaintBrush}"
+                                                    CornerRadius="99"
+                                                    Padding="7,2">
+                                                <TextBlock x:Name="BreakCountText"
+                                                           Text="02"
+                                                           FontFamily="Bahnschrift"
+                                                           FontSize="8"
+                                                           Foreground="{StaticResource GreenDeepBrush}" />
+                                            </Border>
+                                        </Grid>
+
+                                        <StackPanel x:Name="BreakListPanel" />
+
+                                        <Button x:Name="AddBreakButton"
+                                                Style="{StaticResource SecondaryButtonStyle}"
+                                                Height="36"
+                                                Margin="0,10,0,0"
+                                                AutomationProperties.Name="增加休息区间"
+                                                Click="AddBreakButton_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="+" FontSize="15" Margin="0,-1,7,0" Foreground="{StaticResource GreenDeepBrush}" />
+                                                <TextBlock Text="增加休息区间" FontSize="10" />
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </Border>
+
+                                <StackPanel x:Name="SettingsRightPanel" Grid.Column="1" Margin="10,0,0,0">
+                                    <Border Style="{StaticResource CardStyle}" Margin="0,0,0,12">
+                                        <StackPanel>
+                                            <TextBlock Text="循环模式" Style="{StaticResource SectionTitleStyle}" />
+                                            <TextBlock Text="预设会同时更新单循环工作与休息。"
+                                                       Style="{StaticResource MutedTextStyle}"
+                                                       Margin="0,3,0,0" />
+                                            <UniformGrid Columns="3" Margin="0,12,0,0">
+                                                <ToggleButton x:Name="PresetClassic"
+                                                              Content="经典 25/5"
+                                                              Style="{StaticResource ChipToggleStyle}"
+                                                              Margin="0,0,4,0"
+                                                              AutomationProperties.Name="经典 25/5"
+                                                              Click="PresetClassic_Click" />
+                                                <ToggleButton x:Name="PresetDouble"
+                                                              Content="双段专注"
+                                                              Style="{StaticResource ChipToggleStyle}"
+                                                              Margin="2,0,2,0"
+                                                              AutomationProperties.Name="双段专注"
+                                                              Click="PresetDouble_Click" />
+                                                <ToggleButton x:Name="PresetDeep"
+                                                              Content="深度 50/10"
+                                                              Style="{StaticResource ChipToggleStyle}"
+                                                              Margin="4,0,0,0"
+                                                              AutomationProperties.Name="深度 50/10"
+                                                              Click="PresetDeep_Click" />
+                                            </UniformGrid>
+
+                                            <Grid Margin="0,17,0,0">
+                                                <TextBlock Text="循环次数"
+                                                           Style="{StaticResource FieldLabelStyle}"
+                                                           VerticalAlignment="Center" />
+                                                <Border Height="32"
+                                                        HorizontalAlignment="Right"
+                                                        Background="#FFFDF8"
+                                                        BorderBrush="{StaticResource CardBorderBrush}"
+                                                        BorderThickness="1"
+                                                        CornerRadius="7">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Button Content="−"
+                                                                Style="{StaticResource StepperButtonStyle}"
+                                                                Click="CycleCountMinus_Click" />
+                                                        <Border Width="1" Background="{StaticResource LineBrush}" />
+                                                        <TextBox x:Name="CycleCountBox"
+                                                                 Style="{StaticResource StepperInputStyle}"
+                                                                 Width="36"
+                                                                 Text="4"
+                                                                 LostFocus="CycleCountBox_LostFocus"
+                                                                 PreviewKeyDown="CycleCountBox_PreviewKeyDown" />
+                                                        <TextBlock Text="次"
+                                                                   VerticalAlignment="Center"
+                                                                   FontSize="9"
+                                                                   Foreground="{StaticResource MutedBrush}"
+                                                                   Margin="0,0,4,0" />
+                                                        <Border Width="1" Background="{StaticResource LineBrush}" />
+                                                        <Button Content="+"
+                                                                Style="{StaticResource StepperButtonStyle}"
+                                                                Click="CycleCountPlus_Click" />
+                                                    </StackPanel>
+                                                </Border>
+                                            </Grid>
+
+                                            <Border Style="{StaticResource SoftCardStyle}" Margin="0,16,0,0">
+                                                <Grid>
+                                                    <StackPanel>
+                                                        <TextBlock Text="总时长" Style="{StaticResource TinyTextStyle}" />
+                                                        <TextBlock x:Name="TotalDurationText"
+                                                                   Text="3 小时 20 分钟"
+                                                                   FontFamily="Microsoft YaHei UI"
+                                                                   FontSize="15"
+                                                                   FontWeight="SemiBold"
+                                                                   Foreground="{StaticResource InkBrush}"
+                                                                   Margin="0,3,0,0" />
+                                                    </StackPanel>
+                                                    <TextBlock x:Name="CycleBreakdownText"
+                                                               Text="50 分 × 4"
+                                                               FontFamily="Bahnschrift"
+                                                               FontSize="9"
+                                                               Foreground="{StaticResource MutedBrush}"
+                                                               HorizontalAlignment="Right"
+                                                               VerticalAlignment="Bottom" />
+                                                </Grid>
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Style="{StaticResource CardStyle}">
+                                        <StackPanel>
+                                            <TextBlock Text="计时控制" Style="{StaticResource SectionTitleStyle}" />
+                                            <TextBlock x:Name="SettingsStatusText"
+                                                       Text="等待开始"
+                                                       Style="{StaticResource MutedTextStyle}"
+                                                       Margin="0,4,0,0" />
+
+                                            <Button x:Name="SettingsStartButton"
+                                                    Style="{StaticResource PrimaryButtonStyle}"
+                                                    Height="38"
+                                                    Margin="0,15,0,0"
+                                                    Content="开始计时"
+                                                    AutomationProperties.Name="开始或暂停计时"
+                                                    Click="StartPauseButton_Click" />
+
+                                            <Grid Margin="0,8,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+                                                <Button x:Name="SettingsResetButton"
+                                                        Grid.Column="0"
+                                                        Style="{StaticResource SecondaryButtonStyle}"
+                                                        Height="34"
+                                                        Margin="0,0,4,0"
+                                                        Content="重置"
+                                                        AutomationProperties.Name="重置计时"
+                                                        Click="ResetTimerButton_Click" />
+                                                <Button x:Name="SettingsSkipButton"
+                                                        Grid.Column="1"
+                                                        Style="{StaticResource SecondaryButtonStyle}"
+                                                        Height="34"
+                                                        Margin="4,0,0,0"
+                                                        Content="跳过阶段"
+                                                        AutomationProperties.Name="跳过阶段"
+                                                        Click="SkipStageButton_Click" />
+                                            </Grid>
+
+                                            <Border Height="1" Background="{StaticResource LineBrush}" Margin="0,15,0,12" />
+                                            <TextBlock Text="Space 开始 / 暂停    ·    R 重置    ·    Esc 返回"
+                                                       Style="{StaticResource TinyTextStyle}"
+                                                       Foreground="{StaticResource MutedLightBrush}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
+
